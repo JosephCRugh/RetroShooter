@@ -1,0 +1,4 @@
+bin/
+obj/
+GLFW/
+GL.cs
