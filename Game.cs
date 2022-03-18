@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Threading;
-using System.Text;
-using System.IO;
 using GLFW;
 using static OpenGL.GL;
 
 namespace RetroShooter {
-    class Program {
+    class Game {
 
         private static readonly String WINDOW_TITLE = "My Window";
 
         private static readonly int WINDOW_WIDTH  = 500;
         private static readonly int WINDOW_HEIGHT = 500;
+
+        private static QuadBatch batch = new QuadBatch();
 
         private static uint programId;
 
@@ -54,7 +53,6 @@ namespace RetroShooter {
             return window;
         }
         
-      
 
         static void Main(string[] args)
         {
@@ -66,42 +64,22 @@ namespace RetroShooter {
             programId = Graphics.CreateShaderProgram(new uint[] { vertex, fragment });
             glUseProgram(programId);
 
+            batch.Setup();
 
-            uint vao = glGenVertexArray();
-            glBindVertexArray(vao);
+            Texture testTexture = Texture.Load("Resources/test.png");
 
-            uint vbo = glGenBuffer();
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-            glEnableVertexAttribArray(0);
-
-            unsafe
-            {
-                glVertexAttribPointer(0, 2, GL_FLOAT, false, 2 * sizeof(float), null);
-            }
-
-
-            float[] drawData = new float[] {
-                0.0f, 0.0f,
-                0.0f, 1.0f,
-                1.0f, 1.0f,
-            };
-            unsafe
-            {
-                fixed (void* uploadData = &drawData[0])
-                {
-                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * drawData.Length, uploadData, GL_STATIC_DRAW);
-                }
-            }
-            
             while (!Glfw.WindowShouldClose(window))
             {
                 Glfw.PollEvents();
 
                 glClear(GL_COLOR_BUFFER_BIT);
-                glClearColor(0, 0, 0, 1);
+                glClearColor(0.5f, 0.5f, 0.5f, 1);
 
-                glDrawArrays(GL_TRIANGLES, 0, 3);
+                batch.AddQuad(0, 0, 1, 1, 0, 1, 0, 1, testTexture);
+                batch.Render();
 
                 Glfw.SwapBuffers(window);
 

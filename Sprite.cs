@@ -1,0 +1,6 @@
+﻿namespace RetroShooter
+{
+    class Sprite
+    {
+    }
+}
